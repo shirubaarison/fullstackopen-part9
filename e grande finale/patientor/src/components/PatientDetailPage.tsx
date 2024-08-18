@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import patients from "../services/patients";
-import { Patient } from "../types";
+import { Diagnosis, Patient } from "../types";
 import { Typography, Card, CardContent, Box, ListItem, ListItemText, List } from '@mui/material';
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
 import AccessibilityIcon from '@mui/icons-material/Accessibility';
+import diagnosesServices from "../services/diagnosesServices";
 
 const PatientDetailPage = (): JSX.Element => {
   const {id} = useParams<{ id: string }>();
   const [patient, setPatient] = useState<Patient | null>(null);
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[] | null>(null);
 
   useEffect(() => {  
     const fetchData = async () => {
@@ -17,6 +19,9 @@ const PatientDetailPage = (): JSX.Element => {
         const p = await patients.getPatient(id);
         setPatient(p);
       }
+
+      const diag = await diagnosesServices.getAll();
+      setDiagnoses(diag);
     };
 
     fetchData();
@@ -60,9 +65,9 @@ const PatientDetailPage = (): JSX.Element => {
                 <Typography variant="body1">
                 {e.date} {e.description}
                 </Typography>
-                {e.diagnosisCodes && (
-                  <ListItem sx={{ pl: 0 }}>
-                    <ListItemText primary={`Diagnosis Codes: ${e.diagnosisCodes.join(', ')}`} />
+                {e.diagnosisCodes && e.diagnosisCodes.map(code => 
+                  <ListItem key={code} sx={{ pl: 0 }}>
+                    <ListItemText key={code} primary={`${code} ${diagnoses?.find(d => d.code === code)?.name}`}/>
                   </ListItem>
                 )}
               </Box>
