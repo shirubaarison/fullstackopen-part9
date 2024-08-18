@@ -1,0 +1,10 @@
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+
+{
+  "name": "Alysson Breno",
+  "dateOfBirth": "2004-07-09",
+  "ssn": "1092230-123X",
+  "gender": "male",
+  "occupation": "student"
+}
