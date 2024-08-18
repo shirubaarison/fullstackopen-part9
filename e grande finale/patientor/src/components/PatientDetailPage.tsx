@@ -27,7 +27,7 @@ const PatientDetailPage = (): JSX.Element => {
     fetchData();
   }, [id]);
 
-  if (!patient) return <div>Loading...</div>;
+  if (!patient) return <div>Not found</div>;
 
   const renderGenderIcon = (gender: string) => {
     switch (gender) {
