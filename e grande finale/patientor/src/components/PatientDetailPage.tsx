@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import patients from "../services/patients";
 import { Patient } from "../types";
-import { Typography, Card, CardContent } from '@mui/material';
+import { Typography, Card, CardContent, Box, ListItem, ListItemText, List } from '@mui/material';
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
 import AccessibilityIcon from '@mui/icons-material/Accessibility';
@@ -41,15 +41,34 @@ const PatientDetailPage = (): JSX.Element => {
   <>
     <Card>
       <CardContent>
-        <Typography variant="h4" gutterBottom>
-          {patient.name} {renderGenderIcon(patient.gender)}
+        <Typography variant="h4" gutterBottom display="flex" alignItems="center">
+          {patient.name} | {renderGenderIcon(patient.gender)}
         </Typography>
         <Typography variant="body1" gutterBottom>
-          ssh: {patient.ssn}
+          SSN: {patient.ssn}
         </Typography>
         <Typography variant="body1" gutterBottom>
-          occupation: {patient.occupation}
+          Occupation: {patient.occupation}
         </Typography>
+        <Box mt={3}>
+          <Typography variant="h5" gutterBottom>
+            Entries
+          </Typography>
+          <List>
+            {patient.entries?.map(e => (
+              <Box key={e.id} mb={2}>
+                <Typography variant="body1">
+                {e.date} {e.description}
+                </Typography>
+                {e.diagnosisCodes && (
+                  <ListItem sx={{ pl: 0 }}>
+                    <ListItemText primary={`Diagnosis Codes: ${e.diagnosisCodes.join(', ')}`} />
+                  </ListItem>
+                )}
+              </Box>
+            ))}
+          </List>
+        </Box>
       </CardContent>
     </Card>
   </>
