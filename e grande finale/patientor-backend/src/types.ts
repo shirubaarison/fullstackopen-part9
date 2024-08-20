@@ -23,7 +23,7 @@ export interface DiagnosisEntry {
   latin?: string
 }
 
-interface BaseEntry {
+export interface BaseEntry {
   id: string;
   description: string;
   date: string;
@@ -37,7 +37,7 @@ export interface HealthCheckEntry extends BaseEntry {
   healthCheckRating: HealthCheckRating;
 }
 
-export interface Dischage {
+export interface Discharge {
   date: string,
   criteria: string
 }
@@ -49,7 +49,7 @@ export interface SickLeave {
 
 export interface HospitalEntry extends BaseEntry {
   type: "Hospital";
-  discharge: Dischage;
+  discharge: Discharge;
 }
 
 export interface OccupationalHealthcareEntry extends BaseEntry {
@@ -72,7 +72,21 @@ export type NoSsnPatientEntry = Omit<PatientEntry, 'ssn' | 'entries'>;
 export type NewPatientEntry = Omit<PatientEntry, 'id'>;
 export type NonSensitivePatient = Omit<PatientEntry, 'ssn' | 'entries'>;
 
+export type NewHealthCheckEntry = Omit<HealthCheckEntry, 'id'>;
+export type NewHospitalEntry = Omit<HospitalEntry, 'id'>;
+export type NewOccupationalHealthcareEntry = Omit<OccupationalHealthcareEntry, 'id'>;
+
+export type NewPatientEntriesEntry =
+  | NewHealthCheckEntry
+  | NewHospitalEntry
+  | NewOccupationalHealthcareEntry;
+
 export type Entry =
   | HospitalEntry
   | OccupationalHealthcareEntry
   | HealthCheckEntry;
+
+// Define special omit for unions
+type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
+// Define Entry without the 'id' property
+export type EntryWithoutId = UnionOmit<Entry, 'id'>;

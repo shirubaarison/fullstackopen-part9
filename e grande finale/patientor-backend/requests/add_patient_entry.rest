@@ -1,0 +1,99 @@
+POST http://localhost:3001/api/patients/d2773598-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+  "type": "Hospital",
+  "description": "tomou um tiro",
+  "date": "2010-09-03",
+  "specialist": "Sara Pinto",
+  "diagnosisCodes": ["H35.29", "L20"],
+  "discharge": {
+    "date": "2020-09-03",
+    "criteria": "recuperou bem rápido"
+  }
+}
+
+###
+
+POST http://localhost:3001/api/patients/d2773598-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+  "type": "HealthCheck",
+  "description": "tomou um tiro mas passa bem",
+  "date": "2010-09-03",
+  "specialist": "Jo Soares",
+  "diagnosisCodes": ["H35.29"],
+  "healthCheckRating": "Healthy"
+}
+
+###
+
+POST http://localhost:3001/api/patients/d2773598-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+  "type": "OccupationalHealthcare",
+  "description": "segredo",
+  "date": "2000-09-03",
+  "specialist": "Pelé",
+  "diagnosisCodes": ["H35.29"],
+  "employerName": "Samsung",
+  "sickLeave": {
+    "startDate": "2000-09-03",
+    "endDate": "2001-09-03"
+  }
+}
+
+###
+
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+  "type": "OccupationalHealthcare",
+  "description": "segredo",
+  "date": "2000-09-03",
+  "specialist": "Pelé",
+  "diagnosisCodes": ["H35.29"],
+  "employerName": "Samsung"
+}
+
+###
+
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+  "type": "HealthCheck",
+  "description": "segredo",
+  "date": "2000-09-03",
+  "specialist": "Pelé",
+  "diagnosisCodes": ["H35.29"]
+}
+
+###
+
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+  "type": "Hospital",
+  "description": "tomou um tiro",
+  "date": "2010-09-03",
+  "specialist": "Sara Pinto"
+}
+
+###
+
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+  "type": "HealthCheck",
+  "description": "segredo",
+  "date": "2000-09-03",
+  "specialist": "Pelé",
+  "diagnosisCodes": ["H35.29"],
+  "healthCheckRating": "no good"
+}
