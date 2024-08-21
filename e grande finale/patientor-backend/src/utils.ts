@@ -9,15 +9,29 @@ const isDate = (date: string): boolean => {
 };
 
 const parseString = (name: unknown): string => {
-  if (!isString(name))
+  if (!isString(name) || name === "")
     throw new Error('Incorrect string format');
 
   return name;
 };
 
+const parseSpecialist = (name: unknown): string => {
+  if (!isString(name) || name === "")
+    throw new Error('Error in specialist field');
+
+  return name;
+};
+
+const parseDescription = (desc: unknown): string => {
+  if (!isString(desc) || desc === "")
+    throw new Error('Error in description field');
+
+  return desc;
+};
+
 const parseDate = (date: unknown): string => {
   if (!isString(date) || !isDate(date))
-    throw new Error('Incorrect date: ' + date);
+    throw new Error('Error in date field. ' + date);
 
   return date;
 };
@@ -45,12 +59,15 @@ const parseGender = (gender: unknown): Gender => {
 };
 
 const parseHealth = (health: unknown): HealthCheckRating => {
-  if (typeof health !== 'string' || !isHealth(health)) {
+  const healthString = typeof health === 'number' ? health.toString() : health;
+  
+  if (typeof healthString !== 'string' || !isHealth(healthString)) {
     throw new Error('Incorrect health check rating: ' + health);
   }
   
-  return HealthCheckRating[health];
+  return HealthCheckRating[healthString];
 };
+
 
 
 const parseOccupation = (occupation: unknown): string => {
@@ -101,9 +118,9 @@ export const toNewPatientEntriesEntry = (object: unknown): NewPatientEntriesEntr
 
   if ('description' in object && 'date' in object && 'specialist' in object && 'type' in object) {
     const newEntry: Omit<BaseEntry, "id"> = {
-      description: parseString(object.description),
+      description: parseDescription(object.description),
       date: parseDate(object.date),
-      specialist: parseString(object.specialist),
+      specialist: parseSpecialist(object.specialist),
       diagnosisCodes: 'diagnosisCodes' in object ? parseDiagnosisCodes(object.diagnosisCodes) : []
     };
 

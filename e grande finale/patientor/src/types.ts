@@ -66,6 +66,8 @@ export interface SimplePatient extends Omit<Patient, "entries" | "ssn"> {}
 
 export type PatientFormValues = Omit<Patient, "id" | "entries">;
 
+export type EntryFormValues = Omit<HealthCheckEntry, "id">;
+
 export type Entry =
   | HospitalEntry
   | OccupationalHealthcareEntry

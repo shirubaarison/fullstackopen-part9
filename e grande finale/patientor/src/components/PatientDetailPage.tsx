@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import patients from "../services/patients";
-import { Diagnosis, Entry, HealthCheckEntry, HospitalEntry, OccupationalHealthcareEntry, Patient } from "../types";
+import patients from "../services/patientsServices";
+import { Diagnosis, Entry, EntryFormValues, HealthCheckEntry, HospitalEntry, OccupationalHealthcareEntry, Patient } from "../types";
 import { Typography, Card, CardContent, Box, ListItem, ListItemText, List } from '@mui/material';
 import {
   Male as MaleIcon,
@@ -15,8 +15,9 @@ import {
 } from '@mui/icons-material';
 import diagnosesServices from "../services/diagnosesServices";
 import { assertNever } from "../utils";
-
-
+import PatientDetailEntryForm from "./PatientDetailEntryForm";
+import patientsServices from "../services/patientsServices";
+import axios from "axios";
 
 interface HospitalProps {
   hospitalEntry: HospitalEntry
@@ -90,6 +91,7 @@ const PatientDetailPage = (): JSX.Element => {
   const {id} = useParams<{ id: string }>();
   const [patient, setPatient] = useState<Patient | null>(null);
   const [diagnoses, setDiagnoses] = useState<Diagnosis[] | null>(null);
+  const [error, setError] = useState<string>();
 
   useEffect(() => {  
     const fetchData = async () => {
@@ -104,6 +106,32 @@ const PatientDetailPage = (): JSX.Element => {
 
     fetchData();
   }, [id]);
+
+  const addEntriesEntry = async (values: EntryFormValues) => {
+    if (patient) { 
+      try {
+        const newEntry = await patientsServices.addEntry(patient.id, values);
+        const updatedEntries = (patient.entries ?? []).concat(newEntry);
+        setPatient({ ...patient, entries: updatedEntries });
+      } catch (e: unknown) {
+        if (axios.isAxiosError(e)) {
+          if (e.response?.data && typeof e.response.data === "string") {
+            const message = e.response.data.replace('Something went wrong. Error: ', '');
+            console.error(message);
+            setError(message);
+          } else {
+            setError("Unrecognized axios error");
+          }
+        } else {
+          console.error("Unknown error", e);
+          setError("Unknown error");
+        }
+      }
+    }
+    setTimeout(() => {
+      setError(undefined);
+    }, 5000);
+  };
 
   if (!patient) return <div>Not found</div>;
 
@@ -164,6 +192,7 @@ const PatientDetailPage = (): JSX.Element => {
                 </Box>
               ))}
             </List>
+            <PatientDetailEntryForm onSubmit={addEntriesEntry} error={error}/>
           </Box>
         </CardContent>
       </Card>

@@ -7,7 +7,7 @@ import AddPatientModal from "../AddPatientModal";
 
 import HealthRatingBar from "../HealthRatingBar";
 
-import patientService from "../../services/patients";
+import patientService from "../../services/patientsServices";
 import { Link } from "react-router-dom";
 
 interface Props {
