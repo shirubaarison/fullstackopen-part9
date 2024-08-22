@@ -1,6 +1,6 @@
 import { ChangeEvent, SyntheticEvent, useState } from 'react';
 import { Box, Button, TextField, Typography, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Alert } from '@mui/material';
-import { EntryFormValues, HealthCheckRating } from '../types';
+import { EntryFormValues, HealthCheckRating } from '../../types';
 
 interface Props {
   onSubmit: (entry: EntryFormValues) => void;

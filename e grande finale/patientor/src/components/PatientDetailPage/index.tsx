@@ -1,91 +1,22 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import patients from "../services/patientsServices";
-import { Diagnosis, Entry, EntryFormValues, HealthCheckEntry, HospitalEntry, OccupationalHealthcareEntry, Patient } from "../types";
+import patients from "../../services/patientsServices";
+import { Diagnosis, Entry, EntryFormValues, Patient } from "../../types";
 import { Typography, Card, CardContent, Box, ListItem, ListItemText, List } from '@mui/material';
 import {
   Male as MaleIcon,
   Female as FemaleIcon,
-  Work as WorkIcon,
-  LocalHospital as LocalHospitalIcon,
-  Accessibility as AccessibilityIcon,
-  MonitorHeart as MonitorHeartIcon,
-  HeartBroken as HeartBrokenIcon,
-  Favorite as FavoriteIcon
-} from '@mui/icons-material';
-import diagnosesServices from "../services/diagnosesServices";
-import { assertNever } from "../utils";
-import PatientDetailEntryForm from "./PatientDetailEntryForm";
-import patientsServices from "../services/patientsServices";
-import axios from "axios";
-
-interface HospitalProps {
-  hospitalEntry: HospitalEntry
-}
-
-interface OccupationalHealthCareProps {
-  occupationalHealthcareEntry: OccupationalHealthcareEntry
-}
-
-interface HealthCheckProps {
-  healthCheckEntry: HealthCheckEntry;
-}
-
-const Hospital = ({ hospitalEntry }: HospitalProps): JSX.Element => {
-  return (
-    <Typography variant="h6">
-    <LocalHospitalIcon /> {hospitalEntry.date} | {hospitalEntry.specialist} |
-    <Typography variant="body2">
-      {hospitalEntry.description}
-    </Typography>
-    <Typography variant="body2">
-      diagnosed by {hospitalEntry.specialist}
-    </Typography>
-  </Typography>
-  );
-};
-
-const OccupationalHealthcare = ({ occupationalHealthcareEntry }: OccupationalHealthCareProps): JSX.Element => (
-  <Typography variant="h6">
-    <WorkIcon /> {occupationalHealthcareEntry.date} | {occupationalHealthcareEntry.employerName} |
-    <Typography variant="body2">
-      {occupationalHealthcareEntry.description}
-    </Typography>
-    <Typography variant="body2">
-      diagnosed by {occupationalHealthcareEntry.specialist}
-    </Typography>
-  </Typography>
-);
-
-const HealthCheck = ({ healthCheckEntry }: HealthCheckProps): JSX.Element => 
-{
-  const renderHealthIcon = (health: number) => {
-    switch (health) {
-      case 0:
-        return <FavoriteIcon style={{ color: 'red' }} />;
-      case 1:
-        return <FavoriteIcon style={{ color: 'orange' }}/>;
-      case 2:
-        return <FavoriteIcon style={{ color: 'gray' }}/>;
-      case 3:
-        return <HeartBrokenIcon style={{ color: 'black' }}/>;
-      default:
-        return null;
-    }
-  };
   
-  return (
-    <Typography variant="h6">
-      <MonitorHeartIcon /> {healthCheckEntry.date} | {renderHealthIcon(healthCheckEntry.healthCheckRating)} |
-      <Typography variant="body2">
-        {healthCheckEntry.description}
-      </Typography>
-      <Typography variant="body2">
-        diagnosed by {healthCheckEntry.specialist}
-      </Typography>
-    </Typography>
-  );  
-};
+  Accessibility as AccessibilityIcon,
+} from '@mui/icons-material';
+import diagnosesServices from "../../services/diagnosesServices";
+import { assertNever } from "../../utils";
+import PatientDetailEntryForm from "./PatientDetailEntryForm";
+import patientsServices from "../../services/patientsServices";
+import axios from "axios";
+import HealthCheck from "./HealthCheckEntry";
+import Hospital from "./HospitalEntry";
+import OccupationalHealthcare from "./OccupationalHealthcareEntry";
 
 const PatientDetailPage = (): JSX.Element => {
   const {id} = useParams<{ id: string }>();
