@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import patients from "../../services/patientsServices";
 import { Diagnosis, Entry, EntryFormValues, Patient } from "../../types";
-import { Typography, Card, CardContent, Box, ListItem, ListItemText, List } from '@mui/material';
+import { Typography, Card, CardContent, Box, ListItem, ListItemText, List, Divider } from '@mui/material';
 import {
   Male as MaleIcon,
   Female as FemaleIcon,
@@ -21,7 +21,7 @@ import OccupationalHealthcare from "./OccupationalHealthcareEntry";
 const PatientDetailPage = (): JSX.Element => {
   const {id} = useParams<{ id: string }>();
   const [patient, setPatient] = useState<Patient | null>(null);
-  const [diagnoses, setDiagnoses] = useState<Diagnosis[] | null>(null);
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>();
   const [error, setError] = useState<string>();
 
   useEffect(() => {  
@@ -94,7 +94,7 @@ const PatientDetailPage = (): JSX.Element => {
 
   return  (
     <>
-      <Card sx={{ maxWidth: 600, margin: 'auto', mt: 4, boxShadow: 3 }}>
+      <Card sx={{ margin: 'auto', mt: 4, p: 3, boxShadow: 3 }}>
         <CardContent>
           <Typography variant="h4" gutterBottom display="flex" alignItems="center">
             {patient.name} {renderGenderIcon(patient.gender)}
@@ -105,6 +105,7 @@ const PatientDetailPage = (): JSX.Element => {
           <Typography variant="body1" gutterBottom>
             Occupation: {patient.occupation}
           </Typography>
+          <Divider />
           <Box mt={3}>
             <Typography variant="h5" gutterBottom>
               Entries
@@ -122,8 +123,13 @@ const PatientDetailPage = (): JSX.Element => {
                   )}
                 </Box>
               ))}
+              <Divider />
+              <PatientDetailEntryForm
+                onSubmit={addEntriesEntry}
+                error={error}
+                availableDiagnosisCodes={diagnoses || []}
+              />
             </List>
-            <PatientDetailEntryForm onSubmit={addEntriesEntry} error={error}/>
           </Box>
         </CardContent>
       </Card>

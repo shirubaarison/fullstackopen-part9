@@ -1,71 +1,94 @@
 import { ChangeEvent, SyntheticEvent, useState } from 'react';
-import { Box, Button, TextField, Typography, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Alert } from '@mui/material';
-import { EntryFormValues, HealthCheckRating } from '../../types';
+import { Box, Button, TextField, Typography, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Alert, InputLabel, Select, MenuItem, SelectChangeEvent, Checkbox, ListItemText } from '@mui/material';
+import { EntryFormValues, EntryType, HealthCheckRating, Diagnosis } from '../../types';
 
 interface Props {
   onSubmit: (entry: EntryFormValues) => void;
   error?: string;
+  availableDiagnosisCodes: Diagnosis[];
 }
 
-interface HealthCheckOption {
-  value: HealthCheckRating,
-  label: string
-}
-
-const healthCheckOptions: HealthCheckOption[] = Object.values(HealthCheckRating)
-  .filter((value) => typeof value === 'number')
-  .map((value) => ({
-    value: value as HealthCheckRating,
-    label: HealthCheckRating[value as HealthCheckRating]
-      .replace(/([a-z])([A-Z])/g, '$1 $2')
-  }));
-
-
-const HealthCheckEntryForm = ({ onSubmit, error }: Props): JSX.Element => {
+const HealthCheckEntryForm = ({ onSubmit, error, availableDiagnosisCodes }: Props): JSX.Element => {
   const [healthCheckRating, setHealthCheckRating] = useState<HealthCheckRating>(HealthCheckRating.Healthy);
   const [description, setDescription] = useState<string>("");
   const [date, setDate] = useState<string>("");
   const [specialist, setSpecialist] = useState<string>("");
   const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
 
+  const [dischargeDate, setDischageDate] = useState<string>("");
+  const [criteria, setCriteria] = useState<string>("");
+  
+  const [employerName, setEmployerName] = useState<string>("");
+  const [sickLeaveStartDate, setSickLeaveStartDate] = useState<string>("");
+  const [sickLeaveEndDate, setSickLeaveEndDate] = useState<string>("");
+
+  const [type, setType] = useState<EntryType>(EntryType.HealthCheck);
+
   const handleHealthCheckRatingChange = (event: ChangeEvent<HTMLInputElement>) => {
     setHealthCheckRating(Number(event.target.value) as HealthCheckRating); 
   };
 
-  const handleDescriptionChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setDescription(event.target.value);
+  const handleTypeChange = (event: SelectChangeEvent<string>) => {
+    setType(event.target.value as EntryType);
   };
 
-  const handleDateChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setDate(event.target.value);
-  };
-
-  const handleSpecialistChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSpecialist(event.target.value);
-  };
-
-  const handleDiagnosesCodesChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const codes = event.target.value.split(',').map(code => code.trim());
-    setDiagnosisCodes(codes);
+  const handleDiagnosisCodesChange = (event: SelectChangeEvent<string[]>) => {
+    setDiagnosisCodes(event.target.value as string[]);
   };
 
   const addEntry = (event: SyntheticEvent) => {
     event.preventDefault();
-
-    onSubmit({
-      type: "HealthCheck",
+  
+    const baseEntry = {
       description,
       date,
       specialist,
-      healthCheckRating,
-      diagnosisCodes
-    });
-
+      diagnosisCodes,
+    };
+  
+    switch (type) {
+      case "HealthCheck":
+        onSubmit({
+          ...baseEntry,
+          type: "HealthCheck",
+          healthCheckRating,
+        });
+        break;
+      case "Hospital":
+        onSubmit({
+          ...baseEntry,
+          type: "Hospital",
+          discharge: {
+            date: dischargeDate,
+            criteria,
+          },
+        });
+        break;
+      case "OccupationalHealthcare":
+        onSubmit({
+          ...baseEntry,
+          type: "OccupationalHealthcare",
+          employerName,
+          sickLeave: {
+            startDate: sickLeaveStartDate,
+            endDate: sickLeaveEndDate,
+          },
+        });
+        break;
+      default:
+        throw new Error(`Unknown entry type: ${type}`);
+    }
+  
     setDescription("");
     setDate("");
     setSpecialist("");
     setHealthCheckRating(HealthCheckRating.Healthy);
     setDiagnosisCodes([]);
+    setDischageDate("");
+    setCriteria("");
+    setEmployerName("");
+    setSickLeaveStartDate("");
+    setSickLeaveEndDate("");
   };
 
   return (
@@ -75,24 +98,38 @@ const HealthCheckEntryForm = ({ onSubmit, error }: Props): JSX.Element => {
         display: 'flex',
         flexDirection: 'column',
         gap: 2,
-        padding: 2,
+        padding: 5,
         border: '1px dashed #b0b0b0',
         borderRadius: 2,
-        maxWidth: 400,
         margin: 'auto',
         backgroundColor: '#f9f9f9'
       }}
       onSubmit={addEntry}
     >
-      <Typography variant="h6" gutterBottom>New HealthCheck entry</Typography>
+      <Typography variant="h6" gutterBottom>New {type} entry</Typography>
       {error && <Alert severity="error">{error}</Alert>}
+
+      <FormControl fullWidth>
+        <InputLabel>Type</InputLabel>
+        <Select
+          value={type}
+          onChange={handleTypeChange}
+          label="Type"
+        >
+          {Object.values(EntryType).map((entryType) => (
+            <MenuItem key={entryType} value={entryType}>
+              {entryType.replace(/([a-z])([A-Z])/g, '$1 $2')}
+            </MenuItem>
+          ))}
+        </Select>
+     </FormControl>
 
       <TextField 
         label="Description" 
         variant="outlined" 
         fullWidth 
         value={description}
-        onChange={handleDescriptionChange}
+        onChange={({ target }) => setDescription(target.value)}
       />
 
       <TextField
@@ -104,7 +141,7 @@ const HealthCheckEntryForm = ({ onSubmit, error }: Props): JSX.Element => {
           shrink: true,
         }}
         value={date}
-        onChange={handleDateChange}
+        onChange={({ target }) => setDate(target.value)}
       />
 
       <TextField
@@ -112,41 +149,110 @@ const HealthCheckEntryForm = ({ onSubmit, error }: Props): JSX.Element => {
         variant="outlined"
         fullWidth
         value={specialist}
-        onChange={handleSpecialistChange}
+        onChange={({ target }) => setSpecialist(target.value)}
       />
 
-      <FormControl component="fieldset">
-        <FormLabel component="legend">Healthcheck rating</FormLabel>
+      <FormControl fullWidth>
+        <InputLabel>Diagnosis codes</InputLabel>
+        <Select
+          multiple
+          value={diagnosisCodes}
+          onChange={handleDiagnosisCodesChange}
+          renderValue={(selected) => selected.join(', ')}
+          MenuProps={{ PaperProps: { style: { maxHeight: 224, width: 250 } } }}
+        >
+          {availableDiagnosisCodes.map((diagnosis) => (
+            <MenuItem key={diagnosis.code} value={diagnosis.code}>
+              <Checkbox checked={diagnosisCodes.indexOf(diagnosis.code) > -1} />
+              <ListItemText primary={`${diagnosis.code} - ${diagnosis.name}`} />
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      {type === "Hospital" && 
+        <>
+          <FormLabel component="legend">Discharge</FormLabel>
+            <TextField
+            label="Date"
+            variant="outlined"
+            placeholder="YYYY-MM-DD"
+            type="date"
+            fullWidth
+            InputLabelProps={{
+              shrink: true,
+            }}
+            value={dischargeDate}
+            onChange={({ target }) => setDischageDate(target.value)}
+          />
+
+          <TextField
+            label="Criteria"
+            variant="outlined"
+            fullWidth
+            value={criteria}
+            onChange={({ target }) => setCriteria(target.value)}
+          />
+        </>
+      }
+
+      {type === "HealthCheck" && <FormControl component="fieldset">
+        <FormLabel component="legend">Health Check Rating</FormLabel>
         <RadioGroup
           aria-label="health-check-rating"
           name="health-check-rating"
           value={healthCheckRating}
           onChange={handleHealthCheckRatingChange}
         >
-          {healthCheckOptions.map((option) => (
+          {Object.values(HealthCheckRating).filter((value) => typeof value === 'number').map((rating) => (
             <FormControlLabel 
-              key={option.value} 
-              value={option.value} 
+              key={rating} 
+              value={rating} 
               control={<Radio />} 
-              label={option.label} 
+              label={HealthCheckRating[rating]} 
             />
           ))}
         </RadioGroup>
       </FormControl>
+      }
 
-      <TextField 
-        label="Diagnosis codes" 
-        variant="outlined" 
-        fullWidth 
-        placeholder="Z57.1, N30.0" 
-        value={diagnosisCodes.join(', ')}
-        onChange={handleDiagnosesCodesChange}
-      />
+      {type === "OccupationalHealthcare" && 
+        <>
+          <TextField
+            label="Employer"
+            variant="outlined"
+            fullWidth
+            value={employerName}
+            onChange={({ target }) => setEmployerName(target.value)}
+          />
 
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
-        <Button variant="contained" color="error">
-          Cancel
-        </Button>
+          <FormLabel component="legend">Sick leave</FormLabel>
+            <TextField
+            label="Start date"
+            variant="outlined"
+            type="date"
+            fullWidth
+            InputLabelProps={{
+              shrink: true,
+            }}
+            value={sickLeaveStartDate}
+            onChange={({ target }) => setSickLeaveStartDate(target.value)}
+          />
+          <TextField
+            label="End date"
+            variant="outlined"
+            type="date"
+            fullWidth
+            InputLabelProps={{
+              shrink: true,
+            }}
+            value={sickLeaveEndDate}
+            onChange={({ target }) => setSickLeaveEndDate(target.value)}
+          />
+        </>
+      }
+
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2 }}>
         <Button type="submit" variant="contained" color="primary">
           Add
         </Button>

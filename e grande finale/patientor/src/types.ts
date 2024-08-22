@@ -17,6 +17,12 @@ export enum HealthCheckRating {
   "CriticalRisk" = 3
 }
 
+export enum EntryType {
+  HealthCheck = "HealthCheck",
+  Hospital = "Hospital",
+  OccupationalHealthcare = "OccupationalHealthcare"
+}
+
 interface BaseEntry {
   id: string;
   description: string;
@@ -66,9 +72,10 @@ export interface SimplePatient extends Omit<Patient, "entries" | "ssn"> {}
 
 export type PatientFormValues = Omit<Patient, "id" | "entries">;
 
-export type EntryFormValues = Omit<HealthCheckEntry, "id">;
-
 export type Entry =
   | HospitalEntry
   | OccupationalHealthcareEntry
   | HealthCheckEntry;
+
+type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
+export type EntryFormValues = UnionOmit<Entry, 'id'>;
