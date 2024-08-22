@@ -48,7 +48,13 @@ const isGender = (param: string): param is Gender => {
 };
 
 const isHealth = (param: string): param is keyof typeof HealthCheckRating => {
-  return Object.keys(HealthCheckRating).includes(param);
+  return Object.keys(HealthCheckRating)
+    .filter(key => isNaN(Number(key)))
+    .includes(param);
+};
+
+const isHealthNum = (param: number): param is typeof HealthCheckRating[keyof typeof HealthCheckRating] => {
+  return Object.values(HealthCheckRating).includes(param);
 };
 
 const parseGender = (gender: unknown): Gender => {
@@ -58,17 +64,17 @@ const parseGender = (gender: unknown): Gender => {
   return gender;
 };
 
-const parseHealth = (health: unknown): HealthCheckRating => {
-  const healthString = typeof health === 'number' ? health.toString() : health;
-  
-  if (typeof healthString !== 'string' || !isHealth(healthString)) {
-    throw new Error('Incorrect health check rating: ' + health);
+
+const parseHealth = (health: unknown): HealthCheckRating => {  
+  if (typeof health === 'number' && isHealthNum(health)) {
+    return health;
+  }
+  else if (typeof health === 'string' && isHealth(health)) {
+    return HealthCheckRating[health] as HealthCheckRating; 
   }
   
-  return HealthCheckRating[healthString];
+  throw new Error('Incorrect health check rating: ' + health);
 };
-
-
 
 const parseOccupation = (occupation: unknown): string => {
   if (!isString(occupation))

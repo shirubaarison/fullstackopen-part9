@@ -24,7 +24,7 @@ Content-Type: application/json
   "date": "2010-09-03",
   "specialist": "Jo Soares",
   "diagnosisCodes": ["H35.29"],
-  "healthCheckRating": 0
+  "healthCheckRating": "LowRisk"
 }
 
 ###
